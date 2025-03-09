@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultation Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,14 +21,35 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 320px;
+            width: 350px;
+        }
+        .form-group {
+            margin: 15px 0;
+            position: relative;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
         }
         input, select, textarea {
             width: 100%;
-            padding: 8px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
+            padding: 10px;
+            border: 1px solid gray;
             border-radius: 4px;
+            font-size: 16px;
+            background: none;
+        }
+        label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: white;
+            padding: 0 5px;
+            font-size: 12px;
+            color: gray;
+        }
+        .iti {
+            width: 100%;
         }
         button {
             background: #ffcc00;
@@ -43,45 +66,65 @@
     </style>
 </head>
 <body>
-
     <div class="form-container">
         <h3>Secure a Free Consultation</h3>
         <form id="consultationForm">
-            <input type="text" id="firstName" placeholder="Your Name*" required>
-            <input type="text" id="lastName" placeholder="Last Name*" required>
-            <input type="email" id="email" placeholder="Enter your E-mail" required>
-            <select id="investmentAmount" required>
-                <option value="" disabled selected>How much did you invest ($)</option>
-                <option value="Below $1,000">Below $1,000</option>
-                <option value="$1,000 - $5,000">$1,000 - $5,000</option>
-                <option value="$5,000 - $10,000">$5,000 - $10,000</option>
-                <option value="Above $10,000">Above $10,000</option>
-            </select>
-            <textarea id="caseDetails" rows="3" placeholder="Outline your case"></textarea>
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="firstName">First Name*</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name*</label>
+                    <input type="text" id="lastName" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Enter your E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Enter your phone number</label>
+                <input type="tel" id="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="investmentAmount">How much did you invest ($)</label>
+                <select id="investmentAmount" required>
+                    <option value="" disabled selected></option>
+                    <option value="Below $1,000">Below $1,000</option>
+                    <option value="$1,000 - $5,000">$1,000 - $5,000</option>
+                    <option value="$5,000 - $10,000">$5,000 - $10,000</option>
+                    <option value="Above $10,000">Above $10,000</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="caseDetails">Outline your case</label>
+                <textarea id="caseDetails" rows="3"></textarea>
+            </div>
             <button type="submit">Get a free consultation</button>
         </form>
     </div>
-
     <script>
-        // Initialize EmailJS
         (function(){
-            emailjs.init("aQcsMtkaJqLNP7NvJ"); // Replace with your EmailJS Public Key
+            emailjs.init("aQcsMtkaJqLNP7NvJ");
         })();
-
+        var phoneInput = document.querySelector("#phone");
+        var iti = intlTelInput(phoneInput, {
+            separateDialCode: false,
+            preferredCountries: ["us", "gb", "ca", "in"],
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
         document.getElementById("consultationForm").addEventListener("submit", function(event) {
             event.preventDefault();
-
             const firstName = document.getElementById("firstName").value;
             const lastName = document.getElementById("lastName").value;
             const email = document.getElementById("email").value;
             const investmentAmount = document.getElementById("investmentAmount").value;
             const caseDetails = document.getElementById("caseDetails").value;
-
             if (!firstName || !lastName || !email || !investmentAmount) {
                 alert("Please fill in all required fields.");
                 return;
             }
-
             const templateParams = {
                 first_name: firstName,
                 last_name: lastName,
@@ -89,8 +132,6 @@
                 investment: investmentAmount,
                 case_details: caseDetails
             };
-
-            // Send email to customer & admin
             emailjs.send("service_h1theim", "template_gvm6ubl", templateParams)
                 .then(function(response) {
                     alert("Your consultation request has been sent successfully!");
@@ -101,6 +142,5 @@
                 });
         });
     </script>
-
 </body>
 </html>
